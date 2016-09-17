@@ -1,6 +1,7 @@
 import request from 'request'
 import JsonDatabase from './db'
 import "babel-polyfill"
+import _ from 'lodash'
  
 function encodeParams(params){
   return '?' + Object.keys(params).map(k=>k+'='+encodeURIComponent(params[k])).join('&')
@@ -51,13 +52,13 @@ class YoutubeApi extends GoogleAuth{
   setAccessToken(accessToken){
     this.accessToken = accessToken
   }
-  handleRequest(url){
+  handleRequest(url, params){
     if (!this.accessToken){
       throw new Error('No Access Token')
     }
     var allParams = Object.assign({}, params, {key: this.apikey})
     var options = {
-      url: url
+      url: url + encodeParams(allParams)
     , headers: {
         'Authorization': 'Bearer ' + this.accessToken
       }
@@ -68,20 +69,23 @@ class YoutubeApi extends GoogleAuth{
           var info = JSON.parse(body);
           return resolve(info)
         }
-        reject(error)
+        if (error){
+          reject(error)
+        } else {
+          console.log('Bad status:', response.statusCode, '\n' + body)
+          reject()
+        }
       })
-    }).catch(err=>{
-      console.log(err)
     })
   }
   getSubscriptions(params){
-    return this.handleRequest('https://www.googleapis.com/youtube/v3/subscriptions' + encodeParams(params))
+    return this.handleRequest('https://www.googleapis.com/youtube/v3/subscriptions', params)
   }
   getChannel(params){
-    return this.handleRequest('https://www.googleapis.com/youtube/v3/channels' + encodeParams(params))
+    return this.handleRequest('https://www.googleapis.com/youtube/v3/channels', params)
   }
   getPlaylistItem(params){
-    return this.handleRequest('https://www.googleapis.com/youtube/v3/playlistItems' + encodeParams(params))
+    return this.handleRequest('https://www.googleapis.com/youtube/v3/playlistItems', params)
   }
 }
 class Runner{
@@ -110,7 +114,7 @@ class Runner{
     console.log('Run called:', oauthCode)
     var db = this.db.getDb()
     if (db.auths && db.auths.access_token){
-      console.log('Authenticated! Fill in your method here')
+      console.log('Authenticated! Your method will now run')
       callback()
     } else {
       this.userAuth(oauthCode).then(res=>{
@@ -187,6 +191,10 @@ class SubscriptionsRunner extends Runner{
         }
         console.log('Number of subscriptions:', db.subscriptions.items.length)
       }).catch(err=>{
+        if (!err){
+          console.log('Catch, no err')
+          return
+        }
         console.error('Error getting subscriptions:', err)
         db.auths = null
         this.db.invalidateDb()
@@ -195,20 +203,27 @@ class SubscriptionsRunner extends Runner{
     })
   }
 }
-class PlaylistIdsRunner extends(Runner){
+class PlaylistIdsRunner extends Runner{
   constructor(keys){
     super(keys)
   }
   async getPlaylistIds(){
     let db = this.db.getDb()
-    let channelIds = db.subscriptions.items.map(i=>i.snippet.channelId)
+    let channelIds = db.subscriptions.items.map(i=>i.snippet.resourceId.channelId)
+    channelIds = _.chunk(channelIds, 50)
+    //channelIds = Array.from(new Set(channelIds)).slice(0, 20)
     let params = {
       part: 'contentDetails'
     , maxResults: '50'
-    , mine: 'true'
-    , id: channelIds.join(',')
     }
-    let uploads = await this.yt.getChannel(params)
+    let uploads = []
+    for (let channelId of channelIds){
+      console.log('id:', channelId.join(','))
+      params.id = channelId.join(',')
+      let channels = await this.yt.getChannel(params)
+      uploads = uploads.concat(channels.items)
+    }
+    console.log(JSON.stringify(uploads, null, 2))
     let uploadIds = uploads.map(item=>item.contentDetails.relatedPlaylists.uploads)
     Object.assign(db, {uploadIds})
     this.db.invalidateDb()
@@ -220,7 +235,11 @@ class PlaylistIdsRunner extends(Runner){
       this.getPlaylistIds().then(res=>{
         console.log('got playlistIds!', res)
       }).catch(err=>{
-        console.error('Error getting playistIds:', err)
+        if (!err){
+          console.log('Catch, no err')
+          return
+        }
+        console.error('Error getting playlistIds:', err)
         db.auths = null
         this.db.invalidateDb()
         this.run(oauthCode)
@@ -242,11 +261,11 @@ class VideosRunner extends Runner{
       return this.yt.getPlaylistItem(Object.assign({playlistId: id}, params))
     }))
     // fully overwrite here
-    db.videos = videos.map((v,i)=>{
-      let o = {}
+    videos = [].concat.apply([], videos);
+    db.videos = videos.reduce((o, v, i)=>{
       o[db.uploadIds[i]] = v
       return o
-    })
+    }, {})
     this.db.invalidateDb()
     return videos
   }
@@ -254,8 +273,12 @@ class VideosRunner extends Runner{
     this.runAuthed(oauthCode, ()=>{
       let db = this.db.getDb()
       this.getVideos().then(res=>{
-        console.log('Got Videos!', res)
+        console.log('Got Videos!', res.length)
       }).catch(err=>{
+        if (!err){
+          console.log('Catch, no err')
+          return
+        }
         console.error('Error getting Videos:', err)
         db.auths = null
         this.db.invalidateDb()
@@ -290,10 +313,10 @@ function runGetVideos(oauthCode){
 }
 function run(oauthCode){
   //runGettingSubscribers(oauthCode)
-  runGetPlaylistIds(oauthCode)
-  //runGetVideos(oauthCode)
+  //runGetPlaylistIds(oauthCode)
+  runGetVideos(oauthCode)
 }
-run('4/9y_ZRRVHfHWh0NRuSZDkzaCqNJjIMJA5KiZAbHWZVQ0')
+run('4/_3bgPjWS4TFTNhPfZe1Dj0RiPuFiQB5Hm-42_cZ2PHA')
 // steps:
 // 1. AuthUrl
 // 2. AuthToken
