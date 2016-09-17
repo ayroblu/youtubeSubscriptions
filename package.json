@@ -1,0 +1,30 @@
+{
+  "name": "youtube-api",
+  "version": "1.0.0",
+  "description": "Pull youtube data",
+  "main": "test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "babel-node src/script.js",
+    "watch": "watchify src/script.js -o bin/script.js -t babelify -dv --node",
+    "build": "browserify src/script.js -t babelify --node | uglifyjs -mc warnings=false > bin/script.js"
+  },
+  "author": "Ben Lu",
+  "license": "ISC",
+  "babel": {
+    "presets": [
+      "latest",
+      "stage-0"
+    ]
+  },
+  "dependencies": {
+    "babel-cli": "^6.14.0",
+    "babel-polyfill": "^6.13.0",
+    "babel-preset-latest": "^6.14.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "babelify": "^7.3.0",
+    "request": "^2.74.0",
+    "uglify-js": "^2.7.3",
+    "watchify": "^3.7.0"
+  }
+}
