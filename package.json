@@ -8,7 +8,7 @@
     "backend:start": "babel-node src/script.js",
     "backend:watch": "watchify src/script.js -o bin/script.js -t babelify -dv --node",
     "backend:build": "browserify src/script.js -t babelify --node | uglifyjs -mc warnings=false > bin/script.js",
-    "start": "npm run watch & nodemon server.js",
+    "start": "npm run watch & nodemon --exec babel-node server.js",
     "watch": "watchify scripts/script.js -o public/js/script.js -t babelify -dv",
     "build": "browserify scripts/script.js -t babelify | uglifyjs -mc warnings=false > public/js/script.js"
   },

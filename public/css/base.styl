@@ -1,6 +1,3 @@
-$bc = rgba(255,255,255,0.9) //adding $ for clarity
-$headerheight = 60px
-
 // Basics
 //--------
 * 
@@ -20,96 +17,6 @@ a
   text-decoration:none
 pre
   white-space: pre-wrap
-  //word-wrap: break-word       /* Internet Explorer 5.5+ */
-//header
-//  height:40px
-//  background:#59f 
-//footer
-//  color:white
-//  padding-top:20px
-//  background: #555
-//  padding-bottom:20px
 input, ul
   text-align:left
-
-header
-  height:$headerheight
-  position:fixed
-  box-shadow:0 0 10px #aaaaaa
-  display:block
-  width:100%
-  top:0
-  left:0
-  text-align:left
-  background: $bc
-  z-index:9
-
-  .logo
-    display:inline-block
-    height:inherit
-    border-right:1px solid #aaaaaa
-    img
-      height:inherit
-      padding:4px
-      box-sizing:border-box
-  h2#title
-    display:inline-block
-    line-height:$headerheight
-    vertical-align:top
-    margin-left:20px
-    // Again more specific stuff
-
-section.main
-  padding:($headerheight + 20px) 8% 0
-  transition: opacity 0.2s, -webkit-filter 0.2s, filter 0.1s
-  position:relative
-  height:100%
-  box-sizing: border-box
-
-.dim
-  opacity:0.5
-//.blur
-//  filter: blur(4px);
-.l
-  text-align:left
-.r
-  text-align:right
-.hidden
-  display:none !important
-.invisible
-  visibility:hidden
-
-    
-
-// Loading bar stuff
-//-------------------
-.loadingbar
-  position:fixed
-  top:0
-  left:0
-  width:100%
-  display:block
-  height:0
-  z-index:10
-  background:#ff5555
-  transition: width 0.5s, height 0.4s;
-  //0: request not initialized 
-  //1: server connection established
-  //2: request received 
-  //3: processing request 
-  //4: request finished and response is ready
-.notinit, .connest, .reqrec, .procreq, .reqfin
-  height:2px
-
-.loadingbar.notinit
-  width:1%
-  transition: width 0s, height 0s
-.loadingbar.connest
-  width:40%
-.loadingbar.reqrec
-  width:70%
-.loadingbar.procreq
-  width:90%
-.loadingbar.reqfin
-  width:100%
 

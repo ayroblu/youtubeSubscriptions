@@ -23,7 +23,6 @@ app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x
 app.use(stylus.middleware({
   src: path.join(__dirname, 'public')
 , compile: function(str, path) {
-    console.log('compiling',str,path)
     return stylus(str)
       .use(autoprefixer())   // autoprefixer
       .set('filename', path) // @import

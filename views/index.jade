@@ -8,5 +8,32 @@ html
     title YouTube Playlist Manager
     link(href='css/index.css', rel='stylesheet', type='text/css')
   body
-    section.mainPage Hi!
+    section.main
+      h1 Hi!
+      ul.subscriptions
+        each val, index in subscriptions 
+          li
+            article
+              div.img
+                img(src=val.thumbnails.default.url)
+              div.content
+                h3= val.title
+                p.pubDate= val.publishedAt
+                p.pre.description= val.description
+                p.channelTitle= val.channelTitle
+    section.playlist
+      h2 Playlist Name
+      ul.items
+        li
+          div
+            div.img
+            div.content
+              h3 Title 1
+              p Channel Name 1
+        li
+          div
+            div.img
+            div.content
+              h3 Title 2
+              p Channel Name 2
     script(src='js/script.js')

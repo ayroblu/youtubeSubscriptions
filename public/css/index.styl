@@ -1,2 +1,85 @@
 @require "base"
 
+.main
+  margin-right: 30%
+  .subscriptions > li article
+    max-width: 90%
+    box-shadow: 0 0 10px #888
+    margin: 10px auto
+    text-align: left
+
+    .img
+      height: 100%
+      display: inline-block
+      width: 120px
+
+    .content
+      display:inline-block
+      width: calc(100% - 120px)
+      box-sizing: border-box
+      position:relative
+
+      h3
+        position:absolute
+        top: 5px
+        left: 5px
+        height: 1.2em
+        font-size: 1.2em
+
+      .pubDate
+        position: absolute
+        right: 0
+        top: 0
+
+      .description
+        height: calc(90px - 1.2em - 10px)
+        overflow:auto
+        margin-top: calc(10px + 1.2em)
+        margin-left: 5px
+
+      .channelTitle
+        position: absolute
+        right: 0
+        bottom: 0
+        background: rgba(255,255,255, 0.8)
+        padding-left: 5px
+    *
+      text-align: left
+  .pre
+    white-space: pre-wrap
+
+.playlist
+  position:fixed
+  right: 0
+  top: 0
+  bottom: 0
+  overflow:auto
+  width: 30%
+  box-shadow: 0 0 10px #888
+
+  > h2
+    border-bottom: 1px solid #ddd
+    padding-bottom: 10px
+
+  .items > li > div
+    height: 80px
+    border-bottom: 1px solid #ddd
+
+    *
+      text-align: left
+
+    .img, .content
+      display:inline-block
+    .img
+      height: 80px
+      width: calc(106.67px)
+      background: #eee
+    .content
+      width: calc(100% - 116.67px)
+      margin-left: 10px
+      h3
+        margin-top: 5px
+        font-size: 1.1em
+      p
+        margin-top: 10px
+
