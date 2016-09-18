@@ -2,12 +2,15 @@
   "name": "youtube-api",
   "version": "1.0.0",
   "description": "Pull youtube data",
-  "main": "test.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "babel-node src/script.js",
-    "watch": "watchify src/script.js -o bin/script.js -t babelify -dv --node",
-    "build": "browserify src/script.js -t babelify --node | uglifyjs -mc warnings=false > bin/script.js"
+    "backend:start": "babel-node src/script.js",
+    "backend:watch": "watchify src/script.js -o bin/script.js -t babelify -dv --node",
+    "backend:build": "browserify src/script.js -t babelify --node | uglifyjs -mc warnings=false > bin/script.js",
+    "start": "npm run watch & nodemon server.js",
+    "watch": "watchify scripts/script.js -o public/js/script.js -t babelify -dv",
+    "build": "browserify scripts/script.js -t babelify | uglifyjs -mc warnings=false > public/js/script.js"
   },
   "author": "Ben Lu",
   "license": "ISC",
@@ -18,13 +21,26 @@
     ]
   },
   "dependencies": {
+    "async": "^1.5.0",
+    "autoprefixer-stylus": "^0.7.1",
     "babel-cli": "^6.14.0",
     "babel-polyfill": "^6.13.0",
     "babel-preset-latest": "^6.14.0",
     "babel-preset-stage-0": "^6.5.0",
     "babelify": "^7.3.0",
+    "body-parser": "~1.13.2",
+    "browserify": "^13.0.0",
+    "compression": "^1.6.1",
+    "cookie-parser": "~1.3.5",
+    "debug": "~2.2.0",
+    "express": "~4.13.1",
+    "jade": "~1.11.0",
     "lodash": "^4.15.0",
+    "morgan": "~1.6.1",
     "request": "^2.74.0",
+    "socket.io": "^1.3.6",
+    "spdy": "^3.4.0",
+    "stylus": "0.42.3",
     "uglify-js": "^2.7.3",
     "watchify": "^3.7.0"
   }

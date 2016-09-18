@@ -261,7 +261,7 @@ class VideosRunner extends Runner{
       return this.yt.getPlaylistItem(Object.assign({playlistId: id}, params))
     }))
     // fully overwrite here
-    videos = [].concat.apply([], videos);
+    videos = _.flatten(videos)
     db.videos = videos.reduce((o, v, i)=>{
       o[db.uploadIds[i]] = v
       return o
@@ -314,7 +314,7 @@ function runGetVideos(oauthCode){
 function run(oauthCode){
   //runGettingSubscribers(oauthCode)
   //runGetPlaylistIds(oauthCode)
-  runGetVideos(oauthCode)
+  //runGetVideos(oauthCode)
 }
 run('4/_3bgPjWS4TFTNhPfZe1Dj0RiPuFiQB5Hm-42_cZ2PHA')
 // steps:
