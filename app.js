@@ -24,7 +24,7 @@ app.use(stylus.middleware({
   src: path.join(__dirname, 'public')
 , compile: function(str, path) {
     return stylus(str)
-      .use(autoprefixer())   // autoprefixer
+      .use(autoprefixer({browsers: ['> 1%']}))   // autoprefixer
       .set('filename', path) // @import
       .set('compress', true) // compress
       .set('include css', true)

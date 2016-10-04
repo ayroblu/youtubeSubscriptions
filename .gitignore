@@ -1,4 +1,6 @@
 node_modules
 bin
-src/db.json
+api/db.json
 *.pem
+public/css/*.css
+public/js/*.js

@@ -10,14 +10,32 @@ let home = function(req, res, next) {
   // 2. Create list of videos
   // 3. Send list to view
   const subs = new Subscriptions()
+  const playlistManager = new PlaylistManager()
   const mySubscriptions = subs.get()
-  res.render('index', { title: 'YouTube Playlist Manager', subscriptions: mySubscriptions });
+  const playlists = playlistManager.get()
+  // okay, at this point, loop over and group if channel is equal
+  let groupedSubscriptions = []
+  let prev
+  for (let sub of mySubscriptions){
+    if (prev && prev.length && prev[0].channelId === sub.channelId){
+      prev.push(sub)
+      continue
+    }
+    prev = [sub]
+    groupedSubscriptions.push(prev)
+    // logic: if channel === prev.channel prev.append
+    // else group.push
+  }
+  res.render('index', {
+    title: 'YouTube Playlist Manager'
+  , subscriptions: groupedSubscriptions.slice(0, 50)
+  , playlist: playlists[0]
+  });
 }
 router.get('/', home);
 
 class Subscriptions{
   constructor(){
-    console.log(JsonDatabase)
     this.db = new JsonDatabase(2000)
   }
   get(){
@@ -36,6 +54,21 @@ class Subscriptions{
         }
         //a.publishedAt < b.publishedAt ? 1 : a.publishedAt > b.publishedAt ? -1 : 0
       }) // descending order
+  }
+}
+class PlaylistManager{
+  constructor(){
+    this.db = new JsonDatabase(2000)
+  }
+  get(){
+    let db = this.db.getDb()
+    return Object.keys(db.playlistItems).map(k=>db.playlistItems[k].map(i=>i.snippet))
+  }
+  add(item){
+  }
+  remove(item){
+  }
+  move(item){
   }
 }
 

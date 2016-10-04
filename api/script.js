@@ -84,7 +84,10 @@ class YoutubeApi extends GoogleAuth{
   getChannel(params){
     return this.handleRequest('https://www.googleapis.com/youtube/v3/channels', params)
   }
-  getPlaylistItem(params){
+  getPlaylists(params){
+    return this.handleRequest('https://www.googleapis.com/youtube/v3/playlists', params)
+  }
+  getPlaylistItems(params){
     return this.handleRequest('https://www.googleapis.com/youtube/v3/playlistItems', params)
   }
 }
@@ -287,6 +290,112 @@ class VideosRunner extends Runner{
     })
   }
 }
+class PlaylistsRunner extends Runner{
+  constructor(keys){
+    super(keys)
+  }
+  async getPlaylists(){
+    var params = {
+      part: 'snippet'
+    , maxResults: '50'
+    , mine: 'true'
+    }
+
+    var db = this.db.getDb()
+    var count = 0
+    if (!db.playlists || !db.playlists.items){
+      Object.assign(db, {playlists:{items:[]}})
+    }
+    while(db.playlists.items.length === 0 || params.pageToken){
+      var subdata = await this.yt.getPlaylists(params)
+      Object.assign(db, {
+        playlists: {
+          items: db.playlists.items.concat(subdata.items)
+        }
+      })
+      params.pageToken = subdata.nextPageToken
+      if (count > subdata.pageInfo.totalResults){
+        console.log('Infinite loop?', count, '>', subdata.pageInfo.totalResults)
+      }
+      count += subdata.pageInfo.resultsPerPage
+    }
+    this.db.invalidateDb()
+    return db.playlists.items
+  }
+  run(oauthCode){
+    this.runAuthed(oauthCode, ()=>{
+      let db = this.db.getDb()
+      this.getPlaylists().then(res=>{
+        console.log('got playlists!', res)
+        if (!res){
+          return console.log('Failed to get playlists!')
+        }
+        console.log('Number of playlists:', db.playlists.items.length)
+      }).catch(err=>{
+        if (!err){
+          console.log('Catch, no err')
+          return
+        }
+        console.error('Error getting playlists:', err)
+        db.auths = null
+        this.db.invalidateDb()
+        this.run(oauthCode)
+      })
+    })
+  }
+}
+class PlaylistItemsRunner extends Runner{
+  constructor(keys){
+    super(keys)
+  }
+  async getPlaylistItems(playlistId){
+    var params = {
+      part: 'snippet'
+    , maxResults: '50'
+    , mine: 'true'
+    , playlistId: playlistId
+    }
+
+    var db = this.db.getDb()
+    var count = 0
+    if (!db.playlistItems || !db.playlistItems[playlistId]){
+      Object.assign(db, {playlistItems:{}})
+      db.playlistItems[playlistId] = []
+    }
+    while(db.playlistItems[playlistId].length === 0 || params.pageToken){
+      var subdata = await this.yt.getPlaylistItems(params)
+      db.playlistItems[playlistId] = db.playlistItems[playlistId].concat(subdata.items)
+      params.pageToken = subdata.nextPageToken
+      if (count > subdata.pageInfo.totalResults){
+        console.log('Infinite loop?', count, '>', subdata.pageInfo.totalResults)
+      }
+      count += subdata.pageInfo.resultsPerPage
+    }
+    this.db.invalidateDb()
+    return db.playlistItems[playlistId]
+  }
+  run(oauthCode, playlistId){
+    this.runAuthed(oauthCode, ()=>{
+      let db = this.db.getDb()
+      this.getPlaylistItems(playlistId).then(res=>{
+        console.log('got playlistItems!', res)
+        if (!res){
+          return console.log('Failed to get playlistItems!')
+        }
+        console.log('Number of playlistItems:', db.playlistItems[playlistId].length)
+      }).catch(err=>{
+        if (!err){
+          console.log('Catch, no err')
+          return
+        }
+        console.error('Error getting playlistItems:', err)
+        db.auths = null
+        this.db.invalidateDb()
+        this.run(oauthCode, playlistId)
+      })
+    })
+  }
+}
 var keys = {
   client_id: '702858083566-456c5iteit5u9pc6otim6gc1iojkealb.apps.googleusercontent.com'
 , redirect_uri: 'http://localhost:4444/oauth2callback'
@@ -311,12 +420,23 @@ function runGetVideos(oauthCode){
   const runner = new VideosRunner(keys)
   runner.run(oauthCode)
 }
+function runGetPlaylists(oauthCode){
+  const runner = new PlaylistsRunner(keys)
+  runner.run(oauthCode)
+}
+function runGetPlaylistItems(oauthCode){
+  const runner = new PlaylistItemsRunner(keys)
+  let playlistId = 'PLj9jM4BaElLNqjQioQfpBYInohJ3B_j0Z'
+  runner.run(oauthCode, playlistId)
+}
 function run(oauthCode){
   //runGettingSubscribers(oauthCode)
   //runGetPlaylistIds(oauthCode)
   //runGetVideos(oauthCode)
+  //runGetPlaylists(oauthCode)
+  runGetPlaylistItems(oauthCode)
 }
-run('4/_3bgPjWS4TFTNhPfZe1Dj0RiPuFiQB5Hm-42_cZ2PHA')
+run('4/edD8ccDtP6MwT7HI7zJOHNh_ck3ogZo_W7clEgEAL-A')
 // steps:
 // 1. AuthUrl
 // 2. AuthToken

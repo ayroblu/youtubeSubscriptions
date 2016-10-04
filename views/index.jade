@@ -9,31 +9,31 @@ html
     link(href='css/index.css', rel='stylesheet', type='text/css')
   body
     section.main
-      h1 Hi!
+      h1 Playlists Manager
       ul.subscriptions
-        each val, index in subscriptions 
+        each group in subscriptions 
           li
-            article
-              div.img
-                img(src=val.thumbnails.default.url)
-              div.content
-                h3= val.title
-                p.pubDate= val.publishedAt
-                p.pre.description= val.description
-                p.channelTitle= val.channelTitle
+            div
+              h3= group[0].channelTitle
+              ul.group
+                each sub in group
+                  li
+                    article
+                      img(src=sub.thumbnails.default.url)
+                      div.content
+                        h3= sub.title
+                        p.pubDate= sub.publishedAt
+                        //p.pre.description= sub.description
     section.playlist
       h2 Playlist Name
       ul.items
-        li
-          div
-            div.img
-            div.content
-              h3 Title 1
-              p Channel Name 1
-        li
-          div
-            div.img
-            div.content
-              h3 Title 2
-              p Channel Name 2
+        each p in playlist
+          li
+            div.noselect
+              div.img
+                img(src=p.thumbnails.default.url)
+              div.content
+                h3= p.title
+                //p= p.channelTitle
+                p= p.position
     script(src='js/script.js')

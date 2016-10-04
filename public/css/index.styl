@@ -1,48 +1,84 @@
 @require "base"
 
 .main
-  margin-right: 30%
-  .subscriptions > li article
-    max-width: 90%
-    box-shadow: 0 0 10px #888
-    margin: 10px auto
-    text-align: left
+  position: fixed;
+  overflow: auto;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 30%;
 
-    .img
+  .subscriptions
+    text-align:center
+  .subscriptions > li
+    display:inline-block
+  
+    .group 
+      position: relative
+      min-width: 200px
+      //height: 150px
+    //  > li
+    //    width: 200px
+    //    position:absolute
+    //    top: 0
+    //    height: 150px
+    //  &:hover
+    //    height: 140px
+    //    z-index: 1
+    //    li + li:hover:before
+    //      content:''
+    //      position:fixed;
+    //      top:0
+    //      bottom:0
+    //      left:0
+    //      right:0
+    //      background: rgba(0, 0, 0, 0.5)
+    //      pointer-events:none
+    //  &:hover > li
+    //    position:relative
+    //    z-index: 1
+
+  .subscriptions > li article
+    //max-width: 90%
+    box-shadow: 0 0 10px #888
+    //margin: 10px auto
+    text-align: left
+    position: relative
+
+    &:after
+      padding-top:0.75%
+
+    img
       height: 100%
       display: inline-block
-      width: 120px
+      width: 100%
 
     .content
-      display:inline-block
-      width: calc(100% - 120px)
-      box-sizing: border-box
-      position:relative
+      position: absolute
+      bottom: 0
+      left: 0
+      right: 0
+      display: block
+      padding: 5px;
+      background: rgba(0, 0, 0, 0.7)
+      color:white;
+      box-shadow: 0 -3px 10px -2px #000
+      opacity: 0.3
+      transition: opacity 0.2s
+    &:hover .content
+      opacity: 1
 
-      h3
-        position:absolute
-        top: 5px
-        left: 5px
-        height: 1.2em
-        font-size: 1.2em
+      //.pubDate
+      //  position: absolute
+      //  right: 0
+      //  top: 0
 
-      .pubDate
-        position: absolute
-        right: 0
-        top: 0
-
-      .description
-        height: calc(90px - 1.2em - 10px)
-        overflow:auto
-        margin-top: calc(10px + 1.2em)
-        margin-left: 5px
-
-      .channelTitle
-        position: absolute
-        right: 0
-        bottom: 0
-        background: rgba(255,255,255, 0.8)
-        padding-left: 5px
+      //.channelTitle
+      //  position: absolute
+      //  right: 0
+      //  bottom: 0
+      //  background: rgba(255,255,255, 0.8)
+      //  padding-left: 5px
     *
       text-align: left
   .pre
@@ -61,9 +97,15 @@
     border-bottom: 1px solid #ddd
     padding-bottom: 10px
 
+  .items > li
+    position:relative
   .items > li > div
     height: 80px
     border-bottom: 1px solid #ddd
+    cursor:move
+    background: white
+    &:hover
+      background: #eee
 
     *
       text-align: left
@@ -74,6 +116,8 @@
       height: 80px
       width: calc(106.67px)
       background: #eee
+      img
+        width:100%
     .content
       width: calc(100% - 116.67px)
       margin-left: 10px
